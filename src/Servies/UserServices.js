@@ -1,72 +1,51 @@
 const UserModel = require("../Models/UserModel");
 const { EncodeTocken } = require("../Utility/TokenHelper");
 
-const UserOTPService = async (req) => {
+//UserSignUpService
+const UserSignUpService = async (req) => {
   try {
-    const { name,email, mobile, password } = req.body;
-    let Code = Math.floor(100000+Math.random()*900000);
+    const { name, email, mobile, password } = req.body;
     const newUser = new UserModel({
-        name: name,
-        mobile: mobile,
-        password: password,
-        email: email,   
+      name: name,
+      mobile: mobile,
+      password: password,
+      email: email,
     });
-    newUser.otp = Code;
-
     await newUser.save();
-    return { status: "succes", message: "Your 6 Digit OTP is Send" };
+    return { status: "succes", message: "Registration Success"};
   } catch (e) {
-    return { status: "Faild", message: e.toString() };
+    return { status: "Faild", message: e.toString(), };
   }
 };
-const LoginService = async (req)=>{
-  try{
-
-  let email = req.params.email;
-   let total = await UserModel.findOne({ email: email}).count("total");
-   if (total === 1) {
-     //read id
-     let user_id = await UserModel.find({ email: email}).select("_id");
-     //Token Generate
-     let token = EncodeTocken(email, user_id[0]["_id"].toString());
-
-     return { status: "success", message: "Login success", token: token };
-   }else{
-      return { status: "Faild", message: e.toString() };
-    }
-  }
-  catch(e){
-    return { status: "Faild", message: e.toString() };
-  }
-}
-
-
-const VarifyOTPService = async (req) => {
+const LoginService = async (req) => {
   try {
-    let email = req.params.email;
-    let otp = req.params.otp;
-    let total = await UserModel.find({ email: email, otp: otp }).count("total");
-
-    if (total === 1) {
-      //read id
-      let user_id = await UserModel.find({ email: email, otp: otp }).select("_id");
-      //Token Generate
-      let token = EncodeTocken(email, user_id[0]["_id"].toString());
-      //set otp 0
-      await UserModel.updateOne({ email: email }, { $set: { otp: "0" } });
-
-      return { status: "success", message: "Valid OTP", token: token };
-    } else {
-      return { status: "Faild", message: "Invalide OTP" };
+    let { email, password } = req.body;
+    const user = await UserModel.findOne({ email: email });
+    if (user) {
+      if (user.password == password) {
+        console.log("Login Success");
+                        //read id 
+        let user_id = await UserModel.find({email:email,password:password}).select('_id');
+       //Token Generate 
+       console.log(user_id);
+         let token = EncodeTocken(email,user_id[0]['_id'].toString())
+        return { status: "success", message: "User Login Success",token:token,user_id:user_id};
+      }else{
+        console.log("Password Incorrect");
+        return { status: "success", message: "Password Incorrect" }; 
+      }
+    }else{
+      console.log("User does not exist");
+      return { status: "error", message: "User does not exist" };
     }
+
   } catch (e) {
-    return { status: "Faild", message: "Invalide OTP" };
+    return { status: "Faild", message: e.toString() };
   }
 };
 
 module.exports = {
-  UserOTPService,
-  VarifyOTPService,
+  UserSignUpService,
   LoginService,
   //SaveProfileService,
   //ReadProfileService
