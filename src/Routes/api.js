@@ -22,6 +22,7 @@ router.get('/LatestProduct',ProductController.LatestProduct);//For Slider
 router.get('/ProducListByKeyword/:keyword',ProductController.ProducListByKeyword);
 router.get('/ProducListByRemark/:remark',ProductController.ProducListByRemark);
 
+
 //Manage Product
 router.post('/CreateProduct',ProductController.CreateProduct);
 router.post('/UpdateProduct/:ProductId',ProductController.UpdateProduct);

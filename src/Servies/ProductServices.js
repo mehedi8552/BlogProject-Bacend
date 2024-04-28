@@ -62,19 +62,24 @@ const ListByKeywordService= async (req)=>{
      }
  }
  // Update Product
- const UpdateProductService = async (req)=>{
-  try{
-    const ProductId = new ObjectId(req.body._id);
-    const body = req.body
-    console.log(ProductId);
-    await ProductModel.updateOne({_id:ProductId},{$set:body});
-    return {status:"success",message:"Product save success"}
-  }
-   catch (e) {
-       return {status:"fail", message:e.toString()}
-   }
+ const UpdateProductService = async (req) => {
+  try {
+    const productId = new ObjectId(req.params.ProductId); 
+    const body = req.body;
 
-}
+    // Update query
+    let data = await ProductModel.updateOne({ _id: productId }, { $set: body });
+
+    if (data.nModified === 0) {
+    
+      return { status: "success", message: "Product not found or no changes were made" };
+    }
+
+    return { status: "success", message: "Product updated successfully", data: data };
+  } catch (e) {
+    return { status: "fail", message: e.toString() };
+  }
+};
  //Read
  const ReadProductService = async (req)=>{
    let result = await ProductModel.find()
