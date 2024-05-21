@@ -11,6 +11,7 @@ router.get('/UserSignUp',UserController.SignUp);
 router.post('/UserLogin',UserController.Login);
 router.get('/UserLogOut',AuthVerification,UserController.UserLogOut);
 
+
 //Blogger Profile 
 router.get('/AllBloggerProfile',ProfileController.BloggerProfile);
 router.get('/BloggerProfileByID/:id',ProfileController.BloggerProfileById);
